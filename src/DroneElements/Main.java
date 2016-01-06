@@ -22,7 +22,7 @@ public class Main extends Application {
 
     
     
-    private static final String DRONE_ENGINES_SOUNDS_EFFECT = "Resources\\198235_eelke_dronesounds-robot-motor.wav";
+    private static final String DRONE_ENGINES_SOUNDS_EFFECT = "Resources\\198235_eelke_dronesounds-robot-motor_mp3cut.wav";
     
 
     /**
