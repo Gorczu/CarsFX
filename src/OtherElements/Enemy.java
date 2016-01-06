@@ -8,9 +8,21 @@ package OtherElements;
 import DroneElements.MathHelper;
 import DroneElements.Point2d;
 import DroneElements.Vector2d;
+import java.awt.Desktop.Action;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
@@ -23,7 +35,7 @@ import javafx.scene.transform.Rotate;
  */
 public class Enemy extends Pane{
     
-    Pane corpse = new Pane();
+    public Pane corpse = new Pane();
     Polygon body = null;
     private float baseX = 0;
     private float baseY = 0;
@@ -33,7 +45,8 @@ public class Enemy extends Pane{
     javafx.scene.image.Image imagePatt = null;
     ImagePattern corpseOfDronePat = null;
     ArrayList<Point2d> pointsWithoutAnyTransform= new ArrayList<Point2d>();
-    
+    VBox vBox = new VBox();
+    Pane descrioptionBox = new Pane();
     
     public Enemy(double x, double y, double w, double h){
         
@@ -60,8 +73,28 @@ public class Enemy extends Pane{
         body.setFill(corpseOfDronePat);
         
         corpse.getChildren().addAll(body);
-        this.getChildren().addAll(corpse);
+        descrioptionBox = new Pane();
+        descrioptionBox.setMinSize(100, 30);
+        vBox.setPrefSize(100, 30);
+        Label label = new Label("TANK");
+        label.setPrefWidth(100);
+        ProgressBar liveBar = new ProgressBar(1.0);
+        liveBar.setPrefWidth(100);
+        liveBar.progressProperty().bindBidirectional(liveProperty);
+        vBox.getChildren().addAll(label, liveBar);
+        descrioptionBox.getChildren().add(vBox);
+        this.getChildren().addAll(corpse, descrioptionBox);
     }
+    
+    private SimpleDoubleProperty liveProperty = new SimpleDoubleProperty(1.0);
+    
+    private void setLive(double value){
+        liveProperty.set(value);
+    }
+    public double getLive(){
+        return liveProperty.get();
+    }
+    
 
     private Vector2d direction = new Vector2d(0, 1f);
     private double deltaLenght = .5;
@@ -84,6 +117,10 @@ public class Enemy extends Pane{
         
         double centerY = (getBaseY() + (getBaseY() - (  SCALE * 32 ))) / 2.0;
         corpse.getTransforms().add(new Rotate(angleChange, baseX , centerY));
+        
+        descrioptionBox.translateXProperty().set(baseX);
+        descrioptionBox.translateYProperty().set(baseY);
+        descrioptionBox.getTransforms().add(new Rotate(angleChange, baseX , centerY));
         
                 
         if(baseX >  w){
@@ -110,6 +147,7 @@ public class Enemy extends Pane{
           (getBaseX() - ( SCALE * 2 )),   (getBaseY() - (  SCALE * 25 )),
           (getBaseX() - ( SCALE * 10)),   (getBaseY() - (  SCALE * 25 ))
         );
+        
         
         if(isShotSignlization){
             if(shotSignalizationIteration > 20){
@@ -187,15 +225,33 @@ public class Enemy extends Pane{
     private  int shotSignalizationIteration = 0;
     public void signalizeThisShot() {
         isShotSignlization = true;
+        
+        setLive(getLive() - (randomGenerator.nextDouble() / 80.0));
+        if(getLive() < 0){
+            bum();
+        }
+            
+        
+        
         //TODO:Set Extra effects on enemy body
         this.body.setFill(Color.RED);
+        BoxBlur bb = new BoxBlur();
+        bb.setWidth(5);
+        bb.setHeight(5);
+        bb.setIterations(3);
+        this.body.effectProperty().set(bb);
     }
     public void disableShotSignalization(){
         isShotSignlization = false;
         //TODO:Disable Extra effects on enemy body
         corpseOfDronePat = new ImagePattern(imagePatt);
         body.setFill(corpseOfDronePat);
+        
+        this.body.effectProperty().set(null);
+    }   
+
+    private void bum() {
+        
     }
-    
     
 }

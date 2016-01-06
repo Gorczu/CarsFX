@@ -6,9 +6,11 @@
 package DroneElements;
 
 import OtherElements.Enemy;
+import java.awt.Desktop.Action;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -185,7 +187,7 @@ class DroneBody extends Pane {
         circle3Connection.setEffect(l);
         circle4Connection.setEffect(l);
         
-        enemiesList.add( new Enemy(155, 150, w, h) );
+        enemiesList.add( new Enemy(155, 150, w, h ));
         
         this.getChildren().addAll(
                 resultsPane,
@@ -366,7 +368,7 @@ class DroneBody extends Pane {
                     GunShot shot = ((GunShot) node);
                     double x = shot.centerXProperty().get();
                     double y = shot.centerYProperty().get();
-                    boolean isShoted = enemy.intersects(shot.getBoundsInParent());// enemy.isShoted(x, y);
+                    boolean isShoted = enemy.corpse.intersects(shot.getBoundsInParent());// enemy.isShoted(x, y);
                     if(isShoted){
                         gunShotsToRemove.add(shot);
                         enemy.signalizeThisShot();
@@ -430,8 +432,14 @@ class DroneBody extends Pane {
                 getBaseX() + 20, getBaseY() - 20
         );
 
-        for(Enemy enemy : enemiesList){
+        
+        for(int enemyIdx = 0; enemyIdx< enemiesList.size(); enemyIdx ++){
+            Enemy enemy = enemiesList.get(enemyIdx);
             enemy.move(animationRate);
+            if(enemy.getLive() < 0){
+                enemiesList.remove(enemy);
+                enemyIdx--;
+            }
         }
         
         
