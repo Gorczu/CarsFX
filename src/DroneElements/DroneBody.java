@@ -358,20 +358,27 @@ class DroneBody extends Pane {
 
         setValues((int) Math.round(animationRate));
 
-        for(Enemy enemy: enemiesList){
-            for (Node node : this.getChildren() ) {
+        ArrayList<GunShot> gunShotsToRemove = new ArrayList<GunShot>();
+        for(int enemyIdx =0; enemyIdx< enemiesList.size(); enemyIdx++){
+            Enemy enemy = enemiesList.get(enemyIdx);
+            for ( Node node : this.getChildren()) {
                 if (node instanceof GunShot) {
                     GunShot shot = ((GunShot) node);
                     double x = shot.centerXProperty().get();
                     double y = shot.centerYProperty().get();
-                    boolean isShoted = enemy.isShoted(x, y);
+                    boolean isShoted = enemy.intersects(shot.getBoundsInParent());// enemy.isShoted(x, y);
                     if(isShoted){
-                        
+                        gunShotsToRemove.add(shot);
+                        enemy.signalizeThisShot();
+                        this.setPoints(getPoints() + 1);
                     }
                     
                 }
-            }
+            }    
         }
+        
+        this.getChildren().removeAll(gunShotsToRemove);
+        
         
     }
 
@@ -453,15 +460,15 @@ class DroneBody extends Pane {
     /**
      * @return the points
      */
-    public SimpleIntegerProperty getPoints() {
-        return pointsProperty;
+    public int getPoints() {
+        return pointsProperty.get();
     }
 
     /**
      * @param points the points to set
      */
-    public void setPoints(SimpleIntegerProperty points) {
-        this.pointsProperty = points;
+    public void setPoints(int value) {
+        this.pointsProperty.set(value);
     }
 
     /**

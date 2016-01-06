@@ -13,6 +13,7 @@ import java.util.Random;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 
@@ -28,7 +29,9 @@ public class Enemy extends Pane{
     private float baseY = 0;
     private final double SCALE = 4.0; 
     private double w, h;
-    
+    String path = null;
+    javafx.scene.image.Image imagePatt = null;
+    ImagePattern corpseOfDronePat = null;
     ArrayList<Point2d> pointsWithoutAnyTransform= new ArrayList<Point2d>();
     
     
@@ -51,9 +54,9 @@ public class Enemy extends Pane{
           (getBaseX() - ( SCALE * 2 )),   (getBaseY() - (  SCALE * 25 )),
           (getBaseX() - ( SCALE * 10)),   (getBaseY() - (  SCALE * 25 ))
         );
-        String path = new java.io.File("Textures//tankTexture.png").getAbsolutePath();
-        javafx.scene.image.Image imagePatt = new javafx.scene.image.Image("file:" + path);
-        ImagePattern corpseOfDronePat = new ImagePattern(imagePatt);
+        path = new java.io.File("Textures//tankTexture.png").getAbsolutePath();
+        imagePatt = new javafx.scene.image.Image("file:" + path);
+        corpseOfDronePat = new ImagePattern(imagePatt);
         body.setFill(corpseOfDronePat);
         
         corpse.getChildren().addAll(body);
@@ -108,7 +111,15 @@ public class Enemy extends Pane{
           (getBaseX() - ( SCALE * 10)),   (getBaseY() - (  SCALE * 25 ))
         );
         
-        
+        if(isShotSignlization){
+            if(shotSignalizationIteration > 20){
+                isShotSignlization = false;
+                disableShotSignalization();
+            }
+            shotSignalizationIteration++;
+            
+        }
+      
         generateShot(animationRate);
     }
     
@@ -171,7 +182,20 @@ public class Enemy extends Pane{
         this.direction.setY(direction.getY() + (float)deltaY);
         this.direction.normalize();
     }
-    
+
+    boolean isShotSignlization = false;
+    private  int shotSignalizationIteration = 0;
+    public void signalizeThisShot() {
+        isShotSignlization = true;
+        //TODO:Set Extra effects on enemy body
+        this.body.setFill(Color.RED);
+    }
+    public void disableShotSignalization(){
+        isShotSignlization = false;
+        //TODO:Disable Extra effects on enemy body
+        corpseOfDronePat = new ImagePattern(imagePatt);
+        body.setFill(corpseOfDronePat);
+    }
     
     
 }
