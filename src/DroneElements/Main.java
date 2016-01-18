@@ -20,11 +20,8 @@ import sun.audio.AudioData;
 
 public class Main extends Application {
 
-    
-    
     private static final String DRONE_ENGINES_SOUNDS_EFFECT = "Resources\\198235_eelke_dronesounds-robot-motor_mp3cut.wav";
     
-
     /**
      * The main method is only needed for the IDE with limited JavaFX support.
      * Not needed for running from the command line.
@@ -72,7 +69,7 @@ public class Main extends Application {
         }
         
         Timeline animation = new Timeline(
-                new KeyFrame(Duration.millis(30), e -> drone.move(animationRate)));
+                new KeyFrame(Duration.millis(35), e -> drone.move(animationRate)));
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.play(); // Start animation
 
@@ -108,8 +105,6 @@ public class Main extends Application {
             animation.setRate(animation.getRate() );
         });
     }
-
-    
 }
 
     

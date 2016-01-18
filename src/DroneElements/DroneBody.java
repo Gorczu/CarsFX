@@ -6,23 +6,19 @@
 package DroneElements;
 
 import OtherElements.Enemy;
-import java.awt.Desktop.Action;
+import OtherElements.RandomEnemyGenerator;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
 import javafx.scene.effect.Light.Distant;
 import javafx.scene.effect.Lighting;
 import javafx.scene.layout.Background;
@@ -34,7 +30,6 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -109,7 +104,7 @@ class DroneBody extends Pane {
     private final float DIRECTION_DELTA_CHANGE = 1f;
     private double life = 100;
     
-    ArrayList<Enemy> enemiesList = new ArrayList<Enemy>();
+    private final Lighting l;
     
     public DroneBody() throws URISyntaxException, MalformedURLException {
         
@@ -140,8 +135,6 @@ class DroneBody extends Pane {
         resultsPane.setBorder(new Border(new BorderStroke( Color.BLACK ,  BorderStrokeStyle.SOLID, new CornerRadii(3), BorderWidths.DEFAULT)));
         resultsPane.setPrefSize(150, 80);
         
-        
-        
         HBox levelsHb = new HBox();
         Label levelPref = new Label("Level: ");
         Label levelValue = new Label();
@@ -162,7 +155,7 @@ class DroneBody extends Pane {
         
         Distant light = new Distant();
         light.setAzimuth(-135.0f);
-        Lighting l = new Lighting();
+        l = new Lighting();
         l.setLight(light);
         l.setSurfaceScale(5.0f);
         
@@ -187,7 +180,7 @@ class DroneBody extends Pane {
         circle3Connection.setEffect(l);
         circle4Connection.setEffect(l);
         
-        enemiesList.add( new Enemy(155, 150, w, h ));
+        this.getChildren().add( new Enemy(155, 150, w, h ));
         
         this.getChildren().addAll(
                 resultsPane,
@@ -195,11 +188,6 @@ class DroneBody extends Pane {
                 
         );
         
-        for(Node enemy : enemiesList){
-            enemy.setEffect(l);
-        }
-        this.getChildren().addAll(enemiesList);
-
         volocityDirection = new Vector2d(0f, 1.0f);
     }
 
@@ -361,29 +349,43 @@ class DroneBody extends Pane {
         setValues((int) Math.round(animationRate));
 
         ArrayList<GunShot> gunShotsToRemove = new ArrayList<GunShot>();
-        for(int enemyIdx =0; enemyIdx< enemiesList.size(); enemyIdx++){
-            Enemy enemy = enemiesList.get(enemyIdx);
-            for ( Node node : this.getChildren()) {
-                if (node instanceof GunShot) {
-                    GunShot shot = ((GunShot) node);
-                    double x = shot.centerXProperty().get();
-                    double y = shot.centerYProperty().get();
-                    boolean isShoted = enemy.corpse.intersects(shot.getBoundsInParent());// enemy.isShoted(x, y);
-                    if(isShoted){
-                        gunShotsToRemove.add(shot);
-                        enemy.signalizeThisShot();
-                        this.setPoints(getPoints() + 1);
+        
+        for (int enemyIdx = 0; enemyIdx < this.getChildren().size(); enemyIdx++) {
+            Node nodeEn = this.getChildren().get(enemyIdx);
+            if (nodeEn instanceof Enemy) {
+                Enemy enemy = (Enemy) nodeEn;
+                for (Node node : this.getChildren()) {
+                    if (node instanceof GunShot) {
+                        GunShot shot = ((GunShot) node);
+                        double x = shot.centerXProperty().get();
+                        double y = shot.centerYProperty().get();
+                        boolean isShoted = enemy.corpse.intersects(shot.getBoundsInParent());// enemy.isShoted(x, y);
+                        if (isShoted) {
+                            gunShotsToRemove.add(shot);
+                            enemy.signalizeThisShot();
+                            this.setPoints(getPoints() + 1);
+                        }
+
                     }
-                    
                 }
-            }    
+            }
         }
         
         this.getChildren().removeAll(gunShotsToRemove);
+        this.getChildren().add(enemyGenerator.generate(this.levelProperty.get(), w, h));
         
-        
+
+        for (Node node : this.getChildren()) {
+            if (node instanceof Enemy) {
+                node.setEffect(l);
+            }
+            this.getChildren().add(node);
+        }
     }
 
+
+    private RandomEnemyGenerator enemyGenerator = new RandomEnemyGenerator();
+    
     public void setValues(int animationRate) {
 
         if (animationRate > 0) {
@@ -433,12 +435,16 @@ class DroneBody extends Pane {
         );
 
         
-        for(int enemyIdx = 0; enemyIdx< enemiesList.size(); enemyIdx ++){
-            Enemy enemy = enemiesList.get(enemyIdx);
-            enemy.move(animationRate);
-            if(enemy.getLive() < 0){
-                enemiesList.remove(enemy);
-                enemyIdx--;
+        for (int enemyIdx = 0; enemyIdx < this.getChildren().size(); enemyIdx++) {
+            Node node = this.getChildren().get(enemyIdx);
+            if (node instanceof Enemy) {
+
+                Enemy enemy = (Enemy)node;
+                enemy.move(animationRate);
+                if (enemy.getLive() < 0) {
+                    this.getChildren().remove(enemy);
+                    enemyIdx--;
+                }
             }
         }
         
