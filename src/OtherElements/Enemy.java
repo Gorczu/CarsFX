@@ -5,27 +5,20 @@
  */
 package OtherElements;
 
+import DroneElements.GunShot;
 import DroneElements.MathHelper;
 import DroneElements.Point2d;
 import DroneElements.Vector2d;
-import java.awt.Desktop.Action;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 
@@ -118,9 +111,9 @@ public class Enemy extends Pane{
         double centerY = (getBaseY() + (getBaseY() - (  SCALE * 32 ))) / 2.0;
         corpse.getTransforms().add(new Rotate(angleChange, baseX , centerY));
         
-        descrioptionBox.translateXProperty().set(baseX);
-        descrioptionBox.translateYProperty().set(baseY);
-        descrioptionBox.getTransforms().add(new Rotate(angleChange, baseX , centerY));
+        descrioptionBox.translateXProperty().set(baseX + 20);
+        descrioptionBox.translateYProperty().set(baseY - 50);
+        //descrioptionBox.getTransforms().add(new Rotate(angleChange, baseX , centerY));
         
                 
         if(baseX >  w){
@@ -161,11 +154,20 @@ public class Enemy extends Pane{
         generateShot(animationRate);
     }
     
-    int maxIterationNumBtwShots = 120;
-    public void generateShot(double animationRate){
+    private Vector2d barelDirector = new Vector2d(0f, 0f);
     
-        
-}
+    
+    int maxIterationNumBtwShots = 120;
+    
+    public GunShot generateShot(double animationRate){
+        GunShot result = null;
+        iterator++;
+        if(iterator > 40 + (randomGenerator.nextDouble() * 30)){
+            result = shot(barelDirector);
+            iterator = 0;
+        }
+        return result;
+    }
     
     public boolean isShoted(double x, double y){
         
@@ -182,6 +184,8 @@ public class Enemy extends Pane{
         return MathHelper.isPointInPolygon(point, thisBodyPolygon);
         
     }
+    
+    
     
     
     /**
@@ -231,8 +235,6 @@ public class Enemy extends Pane{
             bum();
         }
             
-        
-        
         //TODO:Set Extra effects on enemy body
         this.body.setFill(Color.RED);
         BoxBlur bb = new BoxBlur();
@@ -251,6 +253,25 @@ public class Enemy extends Pane{
     }   
 
     private void bum() {
+        
+    }
+
+    /**
+     * @return the barelDirector
+     */
+    public Vector2d getBarelDirector() {
+        return barelDirector;
+    }
+
+    /**
+     * @param barelDirector the barelDirector to set
+     */
+    public void setBarelDirector(Vector2d barelDirector) {
+        this.barelDirector = barelDirector;
+    }
+
+    private GunShot shot(Vector2d barelDirector) {
+        return new GunShot(baseX, baseY, direction, true);
         
     }
     

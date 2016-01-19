@@ -1,7 +1,5 @@
 package DroneElements;
-import DroneElements.Point2d;
 import java.util.ArrayList;
-import javafx.scene.effect.Light;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

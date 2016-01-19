@@ -69,7 +69,7 @@ public class Main extends Application {
         }
         
         Timeline animation = new Timeline(
-                new KeyFrame(Duration.millis(35), e -> drone.move(animationRate)));
+                new KeyFrame(Duration.millis(30), e -> drone.move(animationRate)));
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.play(); // Start animation
 

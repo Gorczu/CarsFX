@@ -20,13 +20,14 @@ public class GunShot extends Circle{
     private Vector2d volocityDirection;
     private double baseX = 0;
     private double baseY = 0;
-    
+    private boolean isEnemyShot = true;
    
-    public GunShot(double x, double y, Vector2d direction){
+    public GunShot(double x, double y, Vector2d direction, boolean isEnemyShot){
        
         super(x, y, 3, Color.BLACK);
         this.baseX = x;
         this.baseY = y;
+        this.isEnemyShot = isEnemyShot;
         volocityDirection = new Vector2d(direction.getX(), direction.getY());
         
     }
@@ -99,5 +100,19 @@ public class GunShot extends Circle{
         super.centerXProperty().set(baseX);      
         super.centerYProperty().set(baseY);
 
+    }
+
+    /**
+     * @return the isEnemyShot
+     */
+    public boolean getIsEnemyShot() {
+        return isEnemyShot;
+    }
+
+    /**
+     * @param isEnemyShot the isEnemyShot to set
+     */
+    public void setIsEnemyShot(boolean isEnemyShot) {
+        this.isEnemyShot = isEnemyShot;
     }
 }
