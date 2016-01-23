@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Light.Distant;
 import javafx.scene.effect.Lighting;
@@ -34,9 +35,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import javafx.util.converter.NumberStringConverter;
 
 /**
@@ -46,15 +52,15 @@ import javafx.util.converter.NumberStringConverter;
 class DroneBody extends Pane {
 
 
-    private static final double w = 1200;
-    private static final double h = 800;
+    private static final double w = 1500;
+    private static final double h = 1100;
 
     private static final String SHOT_SOUND_PATH = "Resources/126423__cabeeno-rossley__shoot-laser.wav";
     private Vector2d volocityDirection;
     private ImagePattern corpseOfDronePat;
 
-    private double baseX = w ;
-    private double baseY = h ;
+    private double baseX = w/2.0 ;
+    private double baseY = h/2.0 ;
 
     private Propeller c2 = new Propeller(15, getBaseX() + 65, getBaseY() - 5, 4, 55, 55);
     private Propeller c1 = new Propeller(15, getBaseX() - 25, getBaseY() - 5, 4, 55, 55);
@@ -98,14 +104,12 @@ class DroneBody extends Pane {
 
     Pane bodyParts = new Pane();
     private SimpleIntegerProperty pointsProperty = new SimpleIntegerProperty(0);
-    
     private SimpleIntegerProperty levelProperty = new SimpleIntegerProperty(1);
     private SimpleDoubleProperty liveProperty = new SimpleDoubleProperty(1.0);
     
     private MoveDirection moveDirection;
     private final float DIRECTION_DELTA_CHANGE = 1f;
-    private double life = 100;
-    
+  
     private final Lighting l;
     private boolean isShotSignlization;
     private int shotSignalizationIteration;
@@ -116,7 +120,8 @@ class DroneBody extends Pane {
         
         String path = new java.io.File("Textures//DroneCorpse.png").getAbsolutePath();
         javafx.scene.image.Image imagePatt = new javafx.scene.image.Image("file:" + path);
-
+       
+        
         corpseOfDronePat = new ImagePattern(imagePatt);
         
         bodyPart.setFill(corpseOfDronePat);//setFill();//corpseOfDronePat);
@@ -421,6 +426,8 @@ class DroneBody extends Pane {
             }
             //this.getChildren().add(node);
         }
+        
+        
     }
 
 
@@ -559,8 +566,8 @@ class DroneBody extends Pane {
         
         isShotSignlization = true;
         
-        this.liveProperty.set(this.liveProperty.get() - (randomGen.nextDouble() / 80.0));
-        if(this.liveProperty.get() < 0){
+        this.liveProperty.set(this.liveProperty.get() - (randomGen.nextDouble() / 20.0));
+        if(this.liveProperty.get() <= 0){
             bum();
         }
             
@@ -574,7 +581,14 @@ class DroneBody extends Pane {
     }
 
     private void bum() {
-        
+        Label lab = new Label("GAME OVER"); 
+        lab.setFont(Font.font(40));
+        lab.setEffect(l);
+        VBox result = new VBox();
+        result.getChildren().add(lab);
+        result.setBackground(new Background( new BackgroundFill( Color.GREEN, new CornerRadii(15.0), Insets.EMPTY)));
+        this.getChildren().add(result);
+        result.getTransforms().add(new Translate(w/4, h/4));
     }
 
     private ArrayList<Point2d> getBodyPolygon(Polygon bodyPart) {

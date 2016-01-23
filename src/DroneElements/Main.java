@@ -15,6 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import sun.audio.AudioData;
 
 public class Main extends Application {
@@ -53,12 +57,21 @@ public class Main extends Application {
         DroneBody drone = new DroneBody();
 
         // Create a scene and place it in the stage
-        Scene scene = new Scene(drone, 2000, 2500);
+        Stop stop1 = new Stop(0, Color.DARKGOLDENROD);
+        Stop stop2 = new Stop(100, Color.DARKKHAKI);
+        Stop[] stops = { stop1, stop2 } ;
+        LinearGradient gr = new LinearGradient(0, 0, 200, 300, true, CycleMethod.REFLECT, stops) ;
+        
+        
+        Scene scene = new Scene(drone, 2000, 1800, gr);
         primaryStage.setTitle("Dron Atack !!!"); // Set the stage title
         primaryStage.setScene(scene); // Place the scene in the stage
         primaryStage.show(); // Display the stage
+        primaryStage.setMaximized(true);
         
         
+        
+      
         
         try {
             
