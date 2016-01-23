@@ -75,7 +75,11 @@ public class Vector2d implements Serializable {
         return Math.abs(Math.atan2(getX()*v1.getY() - getY()*v1.getX() , dot(v1)));
     }
     
-   
+    public Vector2d(Point2d start, Point2d end) {
+        this.x = end.getX() - start.getX();
+        this.y = end.getY() - start.getY();
+        
+    }
     
     public static final Vector2d VERTICAL_VECTOR = new Vector2d(0,1);
     

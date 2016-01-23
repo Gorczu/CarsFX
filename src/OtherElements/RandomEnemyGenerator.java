@@ -15,7 +15,7 @@ public class RandomEnemyGenerator {
     private Random randomInstance = new Random();
     
     
-    int iterationPause = 1500;
+    int iterationPause = 800;
     private static int currentIteration =0;
     public Enemy generate(int level, double w, double h){
         currentIteration++;
@@ -23,7 +23,7 @@ public class RandomEnemyGenerator {
             currentIteration = 0;
             
             return new Enemy(w * randomInstance.nextDouble(),
-                             h * randomInstance.nextDouble(),
+                             -h * randomInstance.nextDouble(),
                              w,
                              h);
         }
