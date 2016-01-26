@@ -18,6 +18,7 @@ public class RandomEnemyGenerator {
     int iterationPause = 800;
     private static int currentIteration =0;
     public Enemy generate(int level, double w, double h){
+        
         currentIteration++;
         if(currentIteration > (iterationPause - (level * 5))){
             currentIteration = 0;

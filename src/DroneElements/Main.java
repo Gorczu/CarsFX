@@ -42,7 +42,7 @@ public class Main extends Application {
     AudioStream audioStream = new AudioStream(in);
     
     // play the audio clip with the audioplayer class        
-      if(repeatLoop){
+      if(repeatLoop){       
             AudioData data=audioStream.getData();
             ContinuousAudioDataStream  cont = new ContinuousAudioDataStream(data);
             AudioPlayer.player.start(cont);
@@ -117,6 +117,8 @@ public class Main extends Application {
             animation.setRate(animation.getRate() );
         });
     }
+    
+     
 }
 
     

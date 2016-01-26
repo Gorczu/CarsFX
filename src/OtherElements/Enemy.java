@@ -119,9 +119,9 @@ public class Enemy extends  Pane{
             
             float x_ = (float) ((xDir * Math.cos(angleChange)) - ( yDir * Math.sin(angleChange) ));
             float y_ = (float) ((xDir * Math.sin(angleChange)) + ( yDir * Math.cos(angleChange) ));
+            direction.normalize();
             direction.setX(x_);
             direction.setY(y_);
-            direction.normalize();
             iterator = 0;
         }
         
@@ -134,7 +134,7 @@ public class Enemy extends  Pane{
         float oldY = baseY;
         
         this.baseY -= deltaInDir.getY();
-        this.baseX += deltaInDir.getX();
+        this.baseX -= deltaInDir.getX();
         
         
         if(baseX >  w){
@@ -156,14 +156,8 @@ public class Enemy extends  Pane{
             deltaInDir = baseX != oldX ? new Vector2d( (baseX - oldX),(baseY - oldY)) : new Vector2d( deltaInDir.getX(), (baseY - oldY));   
         }
         
-        //Rotate rot = new Rotate(angleChange, baseX , centerY);
-        //corpse.getTransforms().add(rot);
-        //corpse.getTransforms().add(new Translate(-deltaInDir.getX(), -deltaInDir.getY()));
         
-        
-        //Point2D pt = rot.transform(deltaInDir.getX(), deltaInDir.getY());
         descrioptionBox.getTransforms().add(new Translate(deltaInDir.getX(), deltaInDir.getY()));
-        //descrioptionBox.getTransforms().add(new Rotate(angleChange, baseX , centerY ));
         
         double x1_ = (x1 * Math.cos(angleChange)) - ( y1 * Math.sin(angleChange) );
         double x2_ = (x2 * Math.cos(angleChange)) - ( y2 * Math.sin(angleChange) ); 

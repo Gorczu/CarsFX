@@ -20,7 +20,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Light.Distant;
 import javafx.scene.effect.Lighting;
@@ -35,14 +34,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import javafx.util.Pair;
 import javafx.util.converter.NumberStringConverter;
 
 /**
@@ -124,7 +121,7 @@ class DroneBody extends Pane {
         
         corpseOfDronePat = new ImagePattern(imagePatt);
         
-        bodyPart.setFill(corpseOfDronePat);//setFill();//corpseOfDronePat);
+        bodyPart.setFill(corpseOfDronePat);
         circle1Connection.setFill(Color.BLUE);
         circle2Connection.setFill(Color.BLUE);
         circle3Connection.setFill(Color.BLUE);
@@ -170,8 +167,6 @@ class DroneBody extends Pane {
         l.setLight(light);
         l.setSurfaceScale(5.0f);
         
-        
-        
         bodyParts.getChildren().addAll(
                 c1,
                 c2,
@@ -215,12 +210,14 @@ class DroneBody extends Pane {
     public void setTurnDirection(MoveDirection turnDirection) {
         this.moveDirection = turnDirection;
     }
-
+    
+    
 
     public void turnVelocityDirRight() {
 
-        float deltaX = (float) Math.sin((DIRECTION_DELTA_CHANGE / 180.0) * Math.PI);
-        float deltaY = (float) Math.cos((DIRECTION_DELTA_CHANGE / 180.0) * Math.PI);
+        Pair<Float, Float> res = getDirectionChange(DIRECTION_DELTA_CHANGE);
+        float deltaX = res.getKey();
+        float deltaY = res.getValue();
 
         volocityDirection.setX(volocityDirection.getX() +  deltaX);
         volocityDirection.setY(volocityDirection.getY() +  deltaY);
@@ -229,16 +226,22 @@ class DroneBody extends Pane {
         for (Node node : this.bodyParts.getChildren()) {
             
                 node.getTransforms().add(new Rotate(DIRECTION_DELTA_CHANGE, baseX + 20, baseY - 60));
-                
         }
          
     }
 
+    public Pair<Float, Float> getDirectionChange(float angle){
+        float deltaX = (float) Math.sin((angle / 180.0) * Math.PI);
+        float deltaY = (float) Math.cos((angle / 180.0) * Math.PI);
+        return new Pair<Float, Float>( deltaX, deltaY) ;
+    }
+    
     public void turnVelocityDirLeft() {
 
-        float deltaX = (float) Math.sin((-DIRECTION_DELTA_CHANGE / 180.0) * Math.PI );
-        float deltaY = (float) Math.cos((-DIRECTION_DELTA_CHANGE / 180.0) * Math.PI);
-
+        Pair<Float, Float> res = getDirectionChange(-DIRECTION_DELTA_CHANGE);
+        float deltaX = res.getKey();
+        float deltaY = res.getValue();
+        
         volocityDirection.setX(volocityDirection.getX() +  deltaX);
         volocityDirection.setY(volocityDirection.getY() +  deltaY);
         volocityDirection.normalize();
@@ -385,10 +388,6 @@ class DroneBody extends Pane {
                         GunShot shot = ((GunShot) node);
                         double x = shot.centerXProperty().get();
                         double y = shot.centerYProperty().get();
-                        
-                        //double xCenterEnemy = enemy.getBaseX();
-                        //double yCenterEnemy = enemy.getBaseY();
-                        //double dist = Math.sqrt(Math.pow(xCenterEnemy - x, 2)+ Math.pow(yCenterEnemy - y, 2));
                         boolean isShotedEnemy = enemy.body.getBoundsInParent().intersects(shot.getBoundsInParent())
                                  && !shot.getIsEnemyShot();
                         if (isShotedEnemy) {
@@ -396,7 +395,6 @@ class DroneBody extends Pane {
                             enemy.signalizeThisShot();
                             this.setPoints(getPoints() + 1);
                         }
-                        
                         
                         double distFromPlayer = Math.sqrt(Math.pow(getBaseX() - x, 2)+ Math.pow(getBaseY() - y, 2));
                         boolean isShotedDrone =  distFromPlayer  < 20 &&  shot.getIsEnemyShot();    // isShoted(x,y) && shot.getIsEnemyShot();
@@ -416,7 +414,6 @@ class DroneBody extends Pane {
         if(null != enemy)
             this.getChildren().add(enemy);
         
-
         for (Node node : this.getChildren()) {
             if (node instanceof Enemy) {
                 Enemy enemy1 = (Enemy)node;
@@ -424,7 +421,6 @@ class DroneBody extends Pane {
                     node.setEffect(l);
                 }
             }
-            //this.getChildren().add(node);
         }
         
         
@@ -447,8 +443,6 @@ class DroneBody extends Pane {
             
         }
       
-        
-        
         if (animationRate > 0) {
             c2.move(getBaseX() + 65, getBaseY() - 5, animationRate / 100);
             c1.move(getBaseX() - 25, getBaseY() - 5, -animationRate / 100);
@@ -509,7 +503,7 @@ class DroneBody extends Pane {
             }
         }
         
-        
+      
         for (Node node : this.getChildren() ) {
             if (node instanceof GunShot) {
                 
@@ -588,7 +582,7 @@ class DroneBody extends Pane {
         result.getChildren().add(lab);
         result.setBackground(new Background( new BackgroundFill( Color.GREEN, new CornerRadii(15.0), Insets.EMPTY)));
         this.getChildren().add(result);
-        result.getTransforms().add(new Translate(w/4, h/4));
+        result.getTransforms().add(new Translate(w/3, h/3));
     }
 
     private ArrayList<Point2d> getBodyPolygon(Polygon bodyPart) {
