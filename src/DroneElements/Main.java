@@ -69,10 +69,6 @@ public class Main extends Application {
         primaryStage.show(); // Display the stage
         primaryStage.setMaximized(true);
         
-        
-        
-      
-        
         try {
             
             music(DRONE_ENGINES_SOUNDS_EFFECT, true);
@@ -86,6 +82,7 @@ public class Main extends Application {
         animation.play(); // Start animation
 
         drone.requestFocus();
+        
         
         drone.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.RIGHT) {
